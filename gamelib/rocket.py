@@ -9,7 +9,6 @@ class Rocket(state.BaseSprite):
     # x and y speed per frame
     XSPEED = 1000
     YSPEED = 1000
-    GRAVITY = 0.4
     WINDACC = (0.0, 0.0)
     # how quickly angle changes on launchpad
     ROTSPEED = 100
@@ -77,6 +76,9 @@ class RocketFiredState(state.State):
         self.rkt.xvel = math.sin(oanglerad)*self.rkt.game.pbar.fullness
         self.rkt.yvel = math.cos(oanglerad)*self.rkt.game.pbar.fullness
 
+        # get gravity level from gravity bar
+        Rocket.GRAVITY = self.rkt.game.gbar.get_gravity()
+
     def do_actions(self):
         # move the rocket
         dt = self.rkt.dt
@@ -98,15 +100,15 @@ class RocketFiredState(state.State):
         # draw the rocket
         self.rkt.draw((self.rkt.rect.centerx, self.rkt.rect.centery))
 
-
-
     def check_conditions(self):
-        # if we are off the screen, back to idle state!
-        if self.rkt.game.off_screen(self.rkt):
+        # check if we went off the screen, back to idle state!
+        if self.rkt.game.rktdead:
+            self.rkt.game.rktdead = False
             return 'onlaunchpad'
 
         if self.rkt.game.hitmoon:
             return 'hitmoon'
+        pass
 
 class RocketHitMoonState(state.State):
     def __init__(self, rocket):

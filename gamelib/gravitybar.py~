@@ -13,7 +13,7 @@ class Powerbar(state.BaseSprite):
 
         self.empty_bar()
 
-        # fullness is between 0.0 and MAXFULL (the amount of 'red' in bar)
+        # fullness is between 0.0 and 1.0 (the amount of 'red' in bar)
         self.fullness = 0.0
 
         # add states to the statemachine
