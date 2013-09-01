@@ -2,8 +2,8 @@ import pygame
 import const
 import data
 import sys
-import sprites
 import pygame
+import powerbar, rocket, moon
 #from pygame.locals import * # remove this later
 
 class Game(object):
@@ -16,16 +16,18 @@ class Game(object):
         self.clock = pygame.time.Clock()
 
         # background
-        background = pygame.image.load(data.filepath('ghettoville1.jpg'\
+        background = pygame.image.load(data.filepath('ghettoville2.jpg'\
                                                      )).convert_alpha()
         self.background = pygame.transform.scale(background, const.DMODE)
 
-        # sprite group stuff
-        self.allsprites = pygame.sprite.OrderedUpdates()
-        self.allsprites.add(sprites.Rocket((100,500)))
-        self.allsprites.add(sprites.Moon((800,50)))
+        # track power bar
+        self.pbar = powerbar.Powerbar()
 
-        self.allsprites.add(sprites.Powerbar())
+        # sprite group stuff
+        self.allsprites = pygame.sprite.RenderUpdates()
+        self.allsprites.add(rocket.Rocket((100,500)))
+        self.allsprites.add(moon.Moon((800,50)))
+        self.allsprites.add(self.pbar)
 
         # draw to screen
         self.allsprites.draw(self.screen)
@@ -56,4 +58,6 @@ class Game(object):
 
             pygame.display.update(dirty)
 
-        
+if __name__ == '__main__':
+    gm = Game()
+    gm.main()
