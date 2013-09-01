@@ -46,5 +46,6 @@ class StateMachine(object):
             self.active_state.exit_actions()
 
         self.active_state = self.states[new_state_name]
+        print new_state_name
         self.active_state.entry_actions()
 

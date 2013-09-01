@@ -7,6 +7,7 @@ class Powerbar(state.BaseSprite):
     HEIGHT = 80
     BORDER = 5
     MAXFULL = 1.0
+    LOCATION = (180, 700)
     def __init__(self):
         super(Powerbar, self).__init__()
 
@@ -40,7 +41,7 @@ class Powerbar(state.BaseSprite):
                          Powerbar.BORDER)
 
         # position the image
-        self.rect.centerx, self.rect.centery = (500,500)        
+        self.rect.centerx, self.rect.centery = Powerbar.LOCATION
 
     def update(self, dt, game):
         # store the state of the game in the powerbar object
@@ -106,11 +107,13 @@ class PowerbarFiredState(state.State):
         self.pbar = powerbar
 
     def entry_actions(self):
-        self.pbar.fullness = 0.0
         # draw an empty power bar
         self.pbar.empty_bar()
 
     def check_conditions(self):
         # go back to idle state for now so we can repeatedly fire
         return 'idle'
+
+    def exit_actions(self):
+        self.pbar.fullness = 0.0
 
