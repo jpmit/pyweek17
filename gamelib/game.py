@@ -5,9 +5,12 @@ import sys
 import pygame
 import powerbar, rocket, moon, gravitybar
 import level
-#from pygame.locals import * # remove this later
+import scrolling
 
 class Game(object):
+    # collision constants
+    CRECTROID = 0.5 # for asteroid
+    CRECTMOON = 0.7 # for moon
     def __init__(self):
 
         pygame.init()
@@ -35,7 +38,7 @@ class Game(object):
 
         # the main sprites
         self.moon = moon.Moon()
-        self.rocket = rocket.Rocket()
+        self.rocket = rocket.Rocket(self)
         self.pbar = powerbar.Powerbar()
         self.gbar = gravitybar.Gravitybar()
 
@@ -44,8 +47,20 @@ class Game(object):
         self.rktdead = False # dead if gone off-screen
         self.hitasteroid = False
 
+        # collision functions
+        # rocket with asteroids
+        self.collide_roid = pygame.sprite.collide_rect_ratio(Game.\
+                                                             CRECTROID)
+        # rocket with moon
+        self.collide_moon = pygame.sprite.collide_rect_ratio(Game.\
+                                                             CRECTMOON)
+        
+        # scroller handles moving screen and sprites etc
+        self.scroller = scrolling.Scroller(self)
+
+
     def main(self):
-        for levnum in [0, 1]:
+        for levnum in [0,1,2,3,4]:
             nextlevel = level.Level(self, levnum)
             nextlevel.main()
         pygame.quit()

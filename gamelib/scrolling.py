@@ -14,9 +14,12 @@ class Scroller(object):
     LEFT = 3
     RIGHT = 4
     
-    def __init__(self, game, level):
+    def __init__(self, game):
         self.game = game
-        self.level = level
+
+    def new_level(self, level):
+        """Call this at the start of every new level."""
+        self.level = level        
         self.data = level.data
 
         # start box (where rocket is launched from) and end box (where
@@ -95,6 +98,7 @@ class Scroller(object):
         # NOTE: we can remove a sprite from a sprite group, even if it
         # is not actually in that group (handy).  I.e. the removal has no effect
         self.level.allsprites.empty()
+        self.level.roidsprites.empty()
         
         print 'refreshing for box {0}{1}'.format(self.curbox[0],self.curbox[1])
         # rocket
@@ -115,7 +119,7 @@ class Scroller(object):
             self.level.allsprites.remove(self.game.moon)
 
         # asteroids
-        boxkey = '{0}{0}'.format(self.curbox[0], self.curbox[1])
+        boxkey = '{0}{1}'.format(self.curbox[0], self.curbox[1])
         if boxkey in self.data['asteroids']:
             # create new asteroids and add to the sprite group
             for roidpos in self.data['asteroids'][boxkey]:
@@ -123,9 +127,8 @@ class Scroller(object):
                 posx = roidpos[0]*self.game.swidth
                 posy = roidpos[1]*self.game.sheight
                 print 'roid at {0},{1}!'.format(posx, posy)
-
-                # create new asteroid and add to both groups
                 ast = asteroid.Asteroid((posx,posy))
+                # create new asteroid and add to both groups
                 self.level.roidsprites.add(ast)
                 self.level.allsprites.add(ast)
 
@@ -192,12 +195,22 @@ class Scroller(object):
 
         # check for collision with asteroids, use scaled rects
         if pygame.sprite.spritecollide(self.game.rocket , self.level.roidsprites,
-                                       False, self.level.collide_roid):
+                                       False, self.game.collide_roid):
             self.game.hitasteroid = True
-            self.reset()
         
         # if we are in the end box, check if the rocket hit the moon!                
         if self.curbox == self.ebox:                
-            if self.level.collide_moon(self.game.rocket, self.game.moon):
+            if self.game.collide_moon(self.game.rocket, self.game.moon):
                 self.game.hitmoon = True
-                self.level.finished = True
+
+        # make sure we go back to the start screen if we hit an
+        # asteroid and reset hit status
+        if (self.game.hitasteroid and
+            self.game.rocket.brain.get_state() == 'onlaunchpad'):
+            self.game.hitasteroid = False
+            self.reset()
+
+        if (self.game.hitmoon and
+            self.game.rocket.brain.get_state() == 'onlaunchpad'):
+            self.level.hitmoon = False
+            self.level.finished = True

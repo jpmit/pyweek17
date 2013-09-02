@@ -7,8 +7,7 @@ import scrolling
 import const
 
 class Level(object):
-    CRECTROID = 0.5 # for asteroid
-    CRECTMOON = 0.8 # for moon
+    
     def __init__(self, game, lnum):
         self.game = game
         self.lnum = lnum
@@ -21,27 +20,25 @@ class Level(object):
         # this stores only asteroid sprites for collision checking
         self.roidsprites = pygame.sprite.Group()
 
-        # we always have the rocket!
-        self.allsprites.add(self.game.rocket)
+        # initialise level - put everything in the right place etc.
+        self.init_level()
 
-        # scroller handles moving screen and sprites etc
-        self.scroller = scrolling.Scroller(self.game, self)
+    def init_level(self):
 
-        # collision function for checking collisions between asteroids
-        # and rocket
-        self.collide_roid = pygame.sprite.collide_rect_ratio(Level.CRECTROID)
-        self.collide_moon = pygame.sprite.collide_rect_ratio(Level.CRECTMOON)
+        # initialize scroller which handles screen movement
+        self.game.scroller.new_level(self)
 
         # put the moon in the right place
         self.game.moon.set_pos((self.data['moonpos'][0]*self.game.swidth,
                                 self.data['moonpos'][1]*self.game.sheight))
 
-        # put moon and rocket in start state
+        # put moon, rocket and power gauges in start state
         self.game.moon.set_start_state()
         self.game.rocket.set_start_state()
         self.game.pbar.set_start_state()
         self.game.gbar.set_start_state()
 
+        self.game.hitasteroid = False
         self.game.hitmoon = False
         self.finished = False
 
@@ -66,19 +63,20 @@ class Level(object):
     def main(self):
     
         # main loop
-        while True:
+        while not self.finished:
             dt = self.game.clock.tick(const.FPS)
 
             # store any user input for use in updating the sprites
             self.store_events()
 
             # get the correct sprites in self.allsprites
-            self.allsprites.clear(self.game.screen, self.game.background)
+            self.allsprites.clear(self.game.screen,
+                                  self.game.background)
 
             # update the scroller -> see if rocket went off-screen and
             # handle appropriately.  This also adds/removes from the
             # group self.allsprites.
-            self.scroller.update()
+            self.game.scroller.update()
 
             # update sprites
             self.allsprites.update(dt/1000.0, self.game)
@@ -87,7 +85,4 @@ class Level(object):
             dirty = self.allsprites.draw(self.game.screen)
             pygame.display.update(dirty)
 
-            if self.finished: # this is very hacky
-                # remove all sprites
-                print 'finished level'
-                return
+        # if here, we have finished the level, do any cleanup.

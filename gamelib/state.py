@@ -41,6 +41,12 @@ class StateMachine(object):
         if new_state_name is not None:
             self.set_state(new_state_name)
 
+    def get_state(self):
+        """Return the name of the currently active state."""
+        if self.active_state is None:
+            return None
+        return self.active_state.name
+
     def set_state(self, new_state_name):
         if self.active_state is not None:
             self.active_state.exit_actions()

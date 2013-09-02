@@ -2,21 +2,24 @@ import state
 import data
 import pygame
 import math
+import time
 
 class Rocket(state.BaseSprite):
     # size of rocket
     SIZE = (30,100)
-    # x and y speed per frame
-    XSPEED = 1000
-    YSPEED = 1000
+    # x and y speed per frame (these should probably be equal)
+    XSPEED = 300
+    YSPEED = 300
     WINDACC = (0.0, 0.0)
     # how quickly angle changes on launchpad
     ROTSPEED = 100
     # launchpad location
     LAUNCHLOC = (100, 600)
     
-    def __init__(self):
+    def __init__(self, game):
         super(Rocket, self).__init__()
+
+        self.game = game
         
         # we need to rotate this baseimage
         baseimage = pygame.image.load(data.filepath('rocket.png')).\
@@ -78,8 +81,8 @@ class RocketFiredState(state.State):
         
         # set initial x velocity and y velocity of rocket according to
         # the angle I am aiming at, and the fullness of the powerbar
-        self.rkt.xvel = math.sin(oanglerad)*self.rkt.game.pbar.fullness
-        self.rkt.yvel = math.cos(oanglerad)*self.rkt.game.pbar.fullness
+        self.rkt.xvel = math.sin(oanglerad)*math.exp(self.rkt.game.pbar.fullness)
+        self.rkt.yvel = math.cos(oanglerad)*math.exp(self.rkt.game.pbar.fullness)
 
         # get gravity level from gravity bar
         Rocket.GRAVITY = self.rkt.game.gbar.get_gravity()
@@ -126,13 +129,30 @@ class RocketHitAsteroidState(state.State):
         # store ref to object that we are a state of for manipulation
         self.rkt = rocket
 
+        # for controlling explosion
+        self.explosiondone = False
+        self.ncalled = 0
+
+    def do_actions(self):
+        # do some explosion
+
+        self.ncalled += 1
+
+        if self.ncalled == 100:
+            self.explosiondone = True
+
     def entry_actions(self):
+
         # do some explosion
         pass
 
     def check_conditions(self):
-        self.rkt.game.hitasteroid = False
-        return 'onlaunchpad'
+        if self.explosiondone:
+            return 'onlaunchpad'
+
+    def exit_actions(self):
+        self.explosiondone = False
+        self.ncalled = 0
 
 class RocketHitMoonState(state.State):
     def __init__(self, rocket):
@@ -149,7 +169,6 @@ class RocketHitMoonState(state.State):
     def check_conditions(self):
         if self.rkt.game.pressed[pygame.K_RETURN]:
             # this is slightly dodgy organisation of code?
-            self.rkt.game.hitmoon = False
             return 'onlaunchpad'
 
 class RocketOnLaunchpadState(state.State):
@@ -164,6 +183,9 @@ class RocketOnLaunchpadState(state.State):
         """Move the rocket onto the launchpad"""
         self.rkt.oangle =  self.rkt.fangle
         self.rkt.draw(Rocket.LAUNCHLOC)
+
+        # refresh hitasteroid
+        #self.rkt.game.hitasteroid = False
         
     def do_actions(self):
 

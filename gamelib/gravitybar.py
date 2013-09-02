@@ -99,7 +99,8 @@ class GravitybarNotActiveState(state.State):
         self.gbar = gravitybar
 
     def check_conditions(self):
-        if self.gbar.game.rocket.brain.active_state.name == 'onlaunchpad':
+        if (self.gbar.game.rocket.brain.get_state() == 'onlaunchpad'
+            and self.gbar.game.pbar.brain.get_state() == 'idle') :
             return 'active'
 
 class GravitybarActiveState(state.State):

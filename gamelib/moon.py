@@ -68,4 +68,3 @@ class MoonHitState(state.State):
     def check_conditions(self):
         if self.moon.game.pressed[pygame.K_RETURN]:
             return 'idle'
-
