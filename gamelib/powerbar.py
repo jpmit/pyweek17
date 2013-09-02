@@ -24,6 +24,7 @@ class Powerbar(state.BaseSprite):
         self.brain.add_state(inlaunch_state)
         self.brain.add_state(fired_state)        
 
+    def set_start_state(self):
         # start in the idle (empty) state
         self.brain.set_state('idle')
 

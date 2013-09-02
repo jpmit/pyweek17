@@ -30,12 +30,12 @@ class Gravitybar(state.BaseSprite):
         self.brain.add_state(active_state)
         self.brain.add_state(notactive_state)
 
+    def set_start_state(self):
         # start in the active state
         self.brain.set_state('active')
 
     def get_gravity(self):
         return Gravitybar.GLEVELS[self.nbars]
-        
 
     def add_bar(self):
         """Add one bar to the gravity meter and change gravity

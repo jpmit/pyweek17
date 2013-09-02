@@ -5,7 +5,7 @@ import math
 
 class Rocket(state.BaseSprite):
     # size of rocket
-    SIZE = (20,90)
+    SIZE = (30,100)
     # x and y speed per frame
     XSPEED = 1000
     YSPEED = 1000
@@ -37,17 +37,22 @@ class Rocket(state.BaseSprite):
         onlaunchpad_state = RocketOnLaunchpadState(self)
         fired_state = RocketFiredState(self)
         hitmoon_state = RocketHitMoonState(self)
+        hitasteroid_state = RocketHitAsteroidState(self)        
         self.brain.add_state(onlaunchpad_state)
         self.brain.add_state(fired_state)
-        self.brain.add_state(hitmoon_state)        
+        self.brain.add_state(hitmoon_state)
+        self.brain.add_state(hitasteroid_state)
 
-        # start on the launchpad
+    def set_start_state(self):
+        """Set state to be start of level state"""
+        self.fangle = 0.0
         self.brain.set_state('onlaunchpad')
 
     def draw(self, xy):
         """Draw rocket at coords xy clockwise by angle to vertical"""
         # pygame rotates counter-clockwise by default so negate argument
-        self.image = pygame.transform.rotate(self.baseimage, -self.oangle)
+        self.image = pygame.transform.rotate(self.baseimage,
+                                             -self.oangle)
         self.rect = self.image.get_rect()
         self.rect.centerx, self.rect.centery = xy
 
@@ -106,9 +111,28 @@ class RocketFiredState(state.State):
             self.rkt.game.rktdead = False
             return 'onlaunchpad'
 
+        if self.rkt.game.hitasteroid:
+            return 'hitasteroid'
+
         if self.rkt.game.hitmoon:
             return 'hitmoon'
         pass
+
+class RocketHitAsteroidState(state.State):
+    def __init__(self, rocket):
+        
+        super(RocketHitAsteroidState, self).__init__('hitasteroid')
+
+        # store ref to object that we are a state of for manipulation
+        self.rkt = rocket
+
+    def entry_actions(self):
+        # do some explosion
+        pass
+
+    def check_conditions(self):
+        self.rkt.game.hitasteroid = False
+        return 'onlaunchpad'
 
 class RocketHitMoonState(state.State):
     def __init__(self, rocket):
@@ -138,7 +162,7 @@ class RocketOnLaunchpadState(state.State):
 
     def entry_actions(self):
         """Move the rocket onto the launchpad"""
-        self.rkt.oangle =  0.0
+        self.rkt.oangle =  self.rkt.fangle
         self.rkt.draw(Rocket.LAUNCHLOC)
         
     def do_actions(self):
@@ -175,3 +199,8 @@ class RocketOnLaunchpadState(state.State):
         if self.rkt.game.pbar.brain.active_state.name == 'fired':
             return 'fired'
         pass
+
+    def exit_actions(self):
+        """Save the orientation angle we were fired at so we can put
+        back on launchpad at this angle."""
+        self.rkt.fangle = self.rkt.oangle
