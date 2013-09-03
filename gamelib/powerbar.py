@@ -4,12 +4,14 @@ import const
 
 class Powerbar(state.BaseSprite):
     WIDTH = 300
-    HEIGHT = 80
-    BORDER = 5
+    HEIGHT = 50
+    BORDER = 6
     MAXFULL = 1.0
-    LOCATION = (180, 700)
-    def __init__(self):
+    LOCATION = (180, 560)
+    def __init__(self, game):
         super(Powerbar, self).__init__()
+
+        self.game = game
 
         self.empty_bar()
 
@@ -20,9 +22,13 @@ class Powerbar(state.BaseSprite):
         idle_state = PowerbarIdleState(self)
         inlaunch_state = PowerbarInlaunchState(self)
         fired_state = PowerbarFiredState(self)
+        holding_state = PowerbarHoldingState(self)
         self.brain.add_state(idle_state)
         self.brain.add_state(inlaunch_state)
-        self.brain.add_state(fired_state)        
+        self.brain.add_state(fired_state)
+        self.brain.add_state(holding_state)        
+
+        self.sound = self.game.sfx['pbar']
 
     def set_start_state(self):
         # start in the idle (empty) state
@@ -74,7 +80,7 @@ class PowerbarInlaunchState(state.State):
 
     def do_actions(self):
 
-        # time passed since last ticke
+        # time passed since last tick
         dt = self.pbar.dt
         
         if self.pbar.game.pressed[pygame.K_SPACE]:
@@ -90,7 +96,7 @@ class PowerbarInlaunchState(state.State):
                 rsurf = pygame.Surface(((Powerbar.WIDTH - Powerbar.BORDER*2)\
                                         *self.pbar.fullness,
                                         (Powerbar.HEIGHT - Powerbar.BORDER*2)))
-                rsurf.fill(const.RED)
+                rsurf.fill(const.PBARCOLOR)
                 # blit the red surface onto the main surface
                 self.pbar.image.blit(rsurf, (Powerbar.BORDER, Powerbar.BORDER))
 
@@ -99,7 +105,32 @@ class PowerbarInlaunchState(state.State):
         if not self.pbar.game.pressed[pygame.K_SPACE]:
             return 'fired'
 
+    def entry_actions(self):
+        # play the 'wooshing' effect
+        self.pbar.sound.play()        
+
+    def exit_actions(self):
+        # stop the 'wooshing' effect        
+        self.pbar.sound.stop()        
+        pass
+
+class PowerbarHoldingState(state.State):
+    # has been fired but not yet ready to go back into idle state
+    def __init__(self, powerbar):
+        super(PowerbarHoldingState, self).__init__('holding')
+        self.pbar = powerbar
+
+    def check_conditions(self):
+        if self.pbar.game.rocket.brain.get_state() == 'onlaunchpad':
+            return 'idle'
+        
+    def exit_actions(self):
+        # empty the bar!
+        self.pbar.empty_bar()                
+        self.pbar.fullness = 0.0
+
 class PowerbarFiredState(state.State):
+    INSTATE = 1 # number of frames we need to be in this state for
     def __init__(self, powerbar):
         
         super(PowerbarFiredState, self).__init__('fired')
@@ -108,13 +139,13 @@ class PowerbarFiredState(state.State):
         self.pbar = powerbar
 
     def entry_actions(self):
-        # draw an empty power bar
-        self.pbar.empty_bar()
+        self.instate = 0
+        pass
 
     def check_conditions(self):
-        # go back to idle state for now so we can repeatedly fire
-        return 'idle'
+        # we just need to be in this state long enough so that the rocket can
+        # check our state
+        if self.instate == PowerbarFiredState.INSTATE:
+            return 'holding'
 
-    def exit_actions(self):
-        self.pbar.fullness = 0.0
-
+        self.instate += 1

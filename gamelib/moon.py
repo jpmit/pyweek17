@@ -5,7 +5,9 @@ import const
 class Moon(state.BaseSprite):
     # this is a square sprite at the moment
     DIAMETER = 80
-    def __init__(self):
+    def __init__(self, game):
+
+        self.game = game
 
         super(Moon, self).__init__()
         self.image = pygame.Surface((Moon.DIAMETER, Moon.DIAMETER))
@@ -65,6 +67,10 @@ class MoonHitState(state.State):
                            (40,40), 40)
         self.moon.rect.centerx, self.moon.rect.centery = self.moon.pos
         
+        # play sound effect
+        self.moon.game.sfx['complete'].play()
+        
+        
     def check_conditions(self):
-        if self.moon.game.pressed[pygame.K_RETURN]:
-            return 'idle'
+        # We'll be rescued next level!
+        pass

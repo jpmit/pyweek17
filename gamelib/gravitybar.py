@@ -4,20 +4,23 @@ import const
 
 class Gravitybar(state.BaseSprite):
     WIDTH = 80
-    HEIGHT = 200
-    GLEVELS = [0.2,0.4,0.8,2.0,4.0,10.0]
+    HEIGHT = 100
+    GLEVELS = [0.2,0.4,0.8,1.3,2.0]
     MAXBARS = len(GLEVELS) - 1
-    BORDER = 5
-    LOCATION = (500, 600)
-    def __init__(self):
+    BORDER = 6
+    LOCATION = (460, 530)
+    BARCOLOR = (241, 108, 28)
+    def __init__(self, game):
         super(Gravitybar, self).__init__()
+
+        self.game = game
 
         # full and empty bars (pygame surfaces)
         self.barheight = int(float(Gravitybar.HEIGHT)/Gravitybar.MAXBARS)
         self.fbar = pygame.Surface((Gravitybar.WIDTH - 2*Gravitybar.BORDER,
                                     self.barheight - 2*Gravitybar.BORDER))
 
-        self.fbar.fill(const.YELLOW)
+        self.fbar.fill(Gravitybar.BARCOLOR)
         self.ebar = self.fbar.copy()
         self.ebar.fill(const.WHITE)
 
@@ -46,6 +49,11 @@ class Gravitybar(state.BaseSprite):
             xbl = Gravitybar.BORDER
             self.image.blit(self.fbar, (xbl, ybl))
             self.nbars += 1
+            # play sound!
+            self.game.sfx['click'].play()
+        else:
+            # play not possible sound effect
+            self.game.sfx['error'].play()
 
     def remove_bar(self):
         """Remove one bar from the gravity meter and change gravity
@@ -56,6 +64,11 @@ class Gravitybar(state.BaseSprite):
             xbl = Gravitybar.BORDER
             self.image.blit(self.ebar, (xbl, ybl))
             self.nbars -= 1
+            # play sound!
+            self.game.sfx['click'].play()
+        else:
+            # play not possible sound effect
+            self.game.sfx['error'].play()
 
     def empty_bar(self):
         """Draw an empty gravity bar at the correct place on the screen"""

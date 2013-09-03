@@ -42,7 +42,7 @@ class Scroller(object):
 
         self.refresh_spritegroup()
         
-        print 'Reset! : box is {0}{0}'.format(self.curbox[0], self.curbox[1])
+#        print 'Reset! : box is {0}{0}'.format(self.curbox[0], self.curbox[1])
 
     def move_box(self, direction):
         if self.curbox == self.sbox:
@@ -56,7 +56,7 @@ class Scroller(object):
         if direction == Scroller.RIGHT:
             self.curbox[0] += 1
             
-        print 'moved to {0}{1}'.format(self.curbox[0],self.curbox[1])
+#        print 'moved to {0}{1}'.format(self.curbox[0],self.curbox[1])
 
     def get_boxlocs(self):
         d = {}
@@ -67,15 +67,26 @@ class Scroller(object):
     def off_screen(self, sprite):
         """Return UP, DOWN, LEFT, RIGHT if sprite is offscreen, or None"""
         #print sprite.rect.left, sprite.rect.right, sprite.rect.top, sprite.rect.bottom
-        if (sprite.rect.left > self.game.swidth):
+        if (sprite.rect.right > self.game.swidth):        
+#        if (sprite.rect.left > self.game.swidth):
             return Scroller.RIGHT
         elif (sprite.rect.left < 0):
             return Scroller.LEFT
-        elif (sprite.rect.top > self.game.sheight):
+        #elif (sprite.rect.top > self.game.sheight):
+        elif (sprite.rect.bottom > self.game.sheight):        
             return Scroller.BOTTOM
         elif (sprite.rect.top < 0):
             return Scroller.TOP
         return None
+
+    def need_scroll(self, direction):
+        if (direction == Scroller.TOP or
+            direction == Scroller.LEFT):
+            return True
+        if (direction == Scroller.RIGHT):
+            return (self.game.rocket.rect.left > self.game.swidth)
+        elif (direction == Scroller.BOTTOM):
+            return (self.game.rocket.rect.top > self.game.sheight)            
 
     def allowed(self, direction):
         """Return if we are allowed to move in a certain direction"""
@@ -87,7 +98,7 @@ class Scroller(object):
             key =  '{0}{1}'.format(self.curbox[0], self.curbox[1] - 1)            
         elif direction == Scroller.TOP:
             key =  '{0}{1}'.format(self.curbox[0], self.curbox[1] + 1)
-        print key
+#        print key
         if key in self.boxlocs:
             return True
         return False
@@ -103,6 +114,10 @@ class Scroller(object):
         print 'refreshing for box {0}{1}'.format(self.curbox[0],self.curbox[1])
         # rocket
         self.level.allsprites.add(self.game.rocket)
+
+        # level text
+        self.level.allsprites.add(self.level.ltext)
+        self.level.allsprites.add(self.game.destroyedtext)        
         
         # power bar and gravity bar
         if self.curbox == self.sbox and not self.offstart:
@@ -126,7 +141,7 @@ class Scroller(object):
                 # get positions in pixels!
                 posx = roidpos[0]*self.game.swidth
                 posy = roidpos[1]*self.game.sheight
-                print 'roid at {0},{1}!'.format(posx, posy)
+#                print 'roid at {0},{1}!'.format(posx, posy)
                 ast = asteroid.Asteroid((posx,posy))
                 # create new asteroid and add to both groups
                 self.level.roidsprites.add(ast)
@@ -138,24 +153,32 @@ class Scroller(object):
         topkey = [self.curbox[0], self.curbox[1] + 1]
         bottomkey = [self.curbox[0], self.curbox[1] - 1]
 
+        # add wall or arrow on each of the 4 edges of the screen
+        # left
         if leftkey not in self.data['allowedbox']:
-            # add left wall to sprite group
-            w = wall.SideWall(self.game.sheight, (0,0))
-            self.level.allsprites.add(w)
+            self.level.allsprites.add(self.level.lwall)            
+        else:
+            self.level.larrow.reset()
+            self.level.allsprites.add(self.level.larrow)
+        # right
         if rightkey not in self.data['allowedbox']:
-            # add right wall to sprite group
-            w = wall.SideWall(self.game.sheight,
-                              (self.game.swidth - wall.THICKNESS, 0))            
-            self.level.allsprites.add(w)
+            self.level.allsprites.add(self.level.rwall)
+        else:
+            # add arrow to the right
+            self.level.rarrow.reset()            
+            self.level.allsprites.add(self.level.rarrow)
+        # top
         if topkey not in self.data['allowedbox']:
-            # add top wall to sprite group
-            w = wall.TopWall(self.game.swidth, (0, 0))
-            self.level.allsprites.add(w)
+            self.level.allsprites.add(self.level.uwall)
+        else:
+            self.level.uarrow.reset()            
+            self.level.allsprites.add(self.level.uarrow)
+        # bottom
         if bottomkey not in self.data['allowedbox']:
-            # add bottom wall to sprite group
-            w = wall.TopWall(self.game.swidth,
-                             (0, self.game.sheight - wall.THICKNESS))
-            self.level.allsprites.add(w)
+            self.level.allsprites.add(self.level.dwall)
+        else:
+            self.level.darrow.reset()                        
+            self.level.allsprites.add(self.level.darrow)            
 
     def handle_offscreen(self):
 
@@ -164,28 +187,36 @@ class Scroller(object):
         # if the rocket went off screen, check if we are
         # allowed to go this direction!
         if diroff:
+            print 'offscreen! diroff: {0}'.format(diroff)
             if self.allowed(diroff):
-                print 'moved box!'
-                # move the rocket to this position
-                if diroff == Scroller.RIGHT:
-                    self.game.rocket.rect.centerx -= self.game.swidth
-                    self.move_box(diroff)
-                if diroff == Scroller.LEFT:
-                    self.game.rocket.rect.centerx += self.game.swidth
-                    self.move_box(diroff)                    
-                if diroff == Scroller.TOP:
-                    self.game.rocket.rect.centery += self.game.sheight
-                    self.move_box(diroff)                    
-                if diroff == Scroller.BOTTOM:
-                    self.game.rocket.rect.centery -= self.game.sheight
-                    self.move_box(diroff)
+                # check if we need to scroll
+                if self.need_scroll(diroff):
+                    print 'scroll needed!'
+                    # move the rocket to this position and set the box
+                    if diroff == Scroller.RIGHT:
+                        self.game.rocket.rect.centerx -= self.game.swidth
+                        self.move_box(diroff)
+                    if diroff == Scroller.LEFT:
+                        self.game.rocket.rect.centerx += self.game.swidth
+                        self.move_box(diroff)                    
+                    if diroff == Scroller.TOP:
+                        self.game.rocket.rect.centery += self.game.sheight 
+                        self.move_box(diroff)                    
+                    if diroff == Scroller.BOTTOM:
+                        self.game.rocket.rect.centery -= self.game.sheight
+                        self.move_box(diroff)
 
-                # get the sprites for this new box
-                self.refresh_spritegroup()                
-                    
+                    # get the sprites for this new box
+                    self.refresh_spritegroup()
+                else:
+                    # we dont need to scroll
+                    print 'no scroll needed! diroff: {0}'.format(diroff)
             else:
                 # the rocket 'died' (crashed off the screen)
+                self.game.sfx['error'].play()
                 self.game.rktdead = True
+                self.game.numdestroyed += 1
+                self.game.destroyedtext.set_destroyed(self.game.numdestroyed)
                 self.reset()
 
     def update(self):

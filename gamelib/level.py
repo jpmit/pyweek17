@@ -5,6 +5,8 @@ import sys
 import leveldata
 import scrolling
 import const
+import fontsprite
+import wall
 
 class Level(object):
     
@@ -20,10 +22,25 @@ class Level(object):
         # this stores only asteroid sprites for collision checking
         self.roidsprites = pygame.sprite.Group()
 
+        # some sprites: walls and arrows
+        self.larrow = wall.Arrow(wall.Arrow.LEFT)
+        self.uarrow = wall.Arrow(wall.Arrow.UP)
+        self.rarrow = wall.Arrow(wall.Arrow.RIGHT)
+        self.darrow = wall.Arrow(wall.Arrow.DOWN)
+
+        self.lwall = wall.SideWall(self.game.sheight, (0,0))        
+        self.uwall = wall.TopWall(self.game.swidth, (0, 0))
+        self.dwall = wall.TopWall(self.game.swidth,
+                                  (0, self.game.sheight - wall.THICKNESS))
+        self.rwall = wall.SideWall(self.game.sheight,
+                                   (self.game.swidth - wall.THICKNESS, 0))        
+        
         # initialise level - put everything in the right place etc.
         self.init_level()
 
     def init_level(self):
+        # menu font
+        self.ltext = fontsprite.LevelText(self.game.levelfont, self.lnum + 1)
 
         # initialize scroller which handles screen movement
         self.game.scroller.new_level(self)

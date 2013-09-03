@@ -6,7 +6,7 @@ import time
 
 class Rocket(state.BaseSprite):
     # size of rocket
-    SIZE = (30,100)
+    SIZE = (35,100)
     # x and y speed per frame (these should probably be equal)
     XSPEED = 300
     YSPEED = 300
@@ -14,7 +14,7 @@ class Rocket(state.BaseSprite):
     # how quickly angle changes on launchpad
     ROTSPEED = 100
     # launchpad location
-    LAUNCHLOC = (100, 600)
+    LAUNCHLOC = (100, 480)
     
     def __init__(self, game):
         super(Rocket, self).__init__()
@@ -142,9 +142,9 @@ class RocketHitAsteroidState(state.State):
             self.explosiondone = True
 
     def entry_actions(self):
-
-        # do some explosion
-        pass
+        self.rkt.game.numdestroyed += 1
+        self.rkt.game.destroyedtext.set_destroyed(self.rkt.game.numdestroyed)
+        self.rkt.game.sfx['hitroid'].play()
 
     def check_conditions(self):
         if self.explosiondone:
