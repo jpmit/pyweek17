@@ -1,35 +1,30 @@
+# fontsprite.py
+
 import state
 import pygame
 import const
 
-class LevelText(state.BaseSprite):
-    # the loc is the top left of the rect
-    LOC = (50, 20)
+# constants for positioning the font sprites I use in the game
+LEVLOC = (50, 20)
+PBARLOC = (180, 510)
+DESTLOC = (50, 60)
+GBARLOC = (428, 455)
+DTEXT = 'ROCKETS DESTROYED: '
 
-    def __init__(self, font, lnum = 1):
+class FontSprite(state.BaseSprite):
+    def __init__(self, font, text, pos):
+        super(FontSprite, self).__init__()
 
-        super(LevelText, self).__init__()
-        
-        text = 'LEVEL: {0}'.format(lnum)
-        self.image = font.render(text, True, const.WHITE)
-        self.rect = self.image.get_rect()
-
-        self.rect.topleft = LevelText.LOC
-
-class DestroyedText(state.BaseSprite):
-    # the loc is the top left of the rect
-    LOC = (50, 60)
-
-    def __init__(self, font, num=0):
         self.font = font
-        super(DestroyedText, self).__init__()
 
-        # this will sort out image and rect attributes
-        self.set_destroyed(num)
+        # pos is position of the top left of the rect
+        self.pos = pos
 
-    def set_destroyed(self, num):
-        self.nnum = num
-        text = 'ROCKETS DESTROYED: {0}'.format(num)
+        self.set_text(text)
+
+    def set_text(self, text):
+        """Render the font, hence setting the image and rect
+        attributes."""
         self.image = self.font.render(text, True, const.WHITE)
         self.rect = self.image.get_rect()
-        self.rect.topleft = DestroyedText.LOC
+        self.rect.topleft = self.pos

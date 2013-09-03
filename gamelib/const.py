@@ -15,5 +15,8 @@ YELLOW = (255, 255, 0)
 # test this background color
 BCOLOR = (96, 37, 104)
 
-# color of power bar
+# color of power bar (dark red)
 PBARCOLOR = (223, 20, 20)
+
+# color of gravity bar (orange)
+GBARCOLOR = (241, 108, 28)

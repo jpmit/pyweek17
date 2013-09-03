@@ -68,7 +68,6 @@ class Arrow(state.BaseSprite):
         self.tpassed = 0.0
 
     def reset(self):
-        print 'reset this arrow'
         self.tpassed = 0.0
         self.inum = 0
         self.image = self.images[self.inum]

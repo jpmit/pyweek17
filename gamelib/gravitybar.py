@@ -9,7 +9,6 @@ class Gravitybar(state.BaseSprite):
     MAXBARS = len(GLEVELS) - 1
     BORDER = 6
     LOCATION = (460, 530)
-    BARCOLOR = (241, 108, 28)
     def __init__(self, game):
         super(Gravitybar, self).__init__()
 
@@ -20,7 +19,7 @@ class Gravitybar(state.BaseSprite):
         self.fbar = pygame.Surface((Gravitybar.WIDTH - 2*Gravitybar.BORDER,
                                     self.barheight - 2*Gravitybar.BORDER))
 
-        self.fbar.fill(Gravitybar.BARCOLOR)
+        self.fbar.fill(const.GBARCOLOR)
         self.ebar = self.fbar.copy()
         self.ebar.fill(const.WHITE)
 
@@ -91,7 +90,7 @@ class Gravitybar(state.BaseSprite):
                              Gravitybar.BORDER)
 
         # position the image
-        self.rect.centerx, self.rect.centery = Gravitybar.LOCATION
+        self.rect.center = Gravitybar.LOCATION
 
     def update(self, dt, game):
         # store the state of the game in the gravitybar object

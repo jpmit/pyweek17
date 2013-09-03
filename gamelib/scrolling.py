@@ -6,6 +6,7 @@ import pygame
 from copy import deepcopy
 import asteroid
 import wall
+import fontsprite
 
 class Scroller(object):
     # constants for screen 'scrolling'
@@ -41,8 +42,6 @@ class Scroller(object):
         self.offstart = False # has the rocket left the start box?
 
         self.refresh_spritegroup()
-        
-#        print 'Reset! : box is {0}{0}'.format(self.curbox[0], self.curbox[1])
 
     def move_box(self, direction):
         if self.curbox == self.sbox:
@@ -55,8 +54,6 @@ class Scroller(object):
             self.curbox[0] -= 1
         if direction == Scroller.RIGHT:
             self.curbox[0] += 1
-            
-#        print 'moved to {0}{1}'.format(self.curbox[0],self.curbox[1])
 
     def get_boxlocs(self):
         d = {}
@@ -66,13 +63,10 @@ class Scroller(object):
 
     def off_screen(self, sprite):
         """Return UP, DOWN, LEFT, RIGHT if sprite is offscreen, or None"""
-        #print sprite.rect.left, sprite.rect.right, sprite.rect.top, sprite.rect.bottom
         if (sprite.rect.right > self.game.swidth):        
-#        if (sprite.rect.left > self.game.swidth):
             return Scroller.RIGHT
         elif (sprite.rect.left < 0):
             return Scroller.LEFT
-        #elif (sprite.rect.top > self.game.sheight):
         elif (sprite.rect.bottom > self.game.sheight):        
             return Scroller.BOTTOM
         elif (sprite.rect.top < 0):
@@ -86,34 +80,34 @@ class Scroller(object):
         if (direction == Scroller.RIGHT):
             return (self.game.rocket.rect.left > self.game.swidth)
         elif (direction == Scroller.BOTTOM):
-            return (self.game.rocket.rect.top > self.game.sheight)            
+            return (self.game.rocket.rect.top > self.game.sheight)
 
     def allowed(self, direction):
         """Return if we are allowed to move in a certain direction"""
         if direction == Scroller.RIGHT:
             key =  '{0}{1}'.format(self.curbox[0] + 1, self.curbox[1])
         elif direction == Scroller.LEFT:
-            key =  '{0}{1}'.format(self.curbox[0] - 1, self.curbox[1])            
+            key =  '{0}{1}'.format(self.curbox[0] - 1, self.curbox[1])
+            
         elif direction == Scroller.BOTTOM:
-            key =  '{0}{1}'.format(self.curbox[0], self.curbox[1] - 1)            
+            key =  '{0}{1}'.format(self.curbox[0], self.curbox[1] - 1)
+            
         elif direction == Scroller.TOP:
             key =  '{0}{1}'.format(self.curbox[0], self.curbox[1] + 1)
-#        print key
+
         if key in self.boxlocs:
             return True
         return False
 
     def refresh_spritegroup(self):
-        """Keep track of the sprites that need to be on the current screen"""
+        """Keep track of the sprites that need to be on the current
+        screen"""
         
         # NOTE: we can remove a sprite from a sprite group, even if it
-        # is not actually in that group (handy).  I.e. the removal has no effect
+        # is not actually in that group (handy).  I.e. the removal has
+        # no effect
         self.level.allsprites.empty()
         self.level.roidsprites.empty()
-        
-        print 'refreshing for box {0}{1}'.format(self.curbox[0],self.curbox[1])
-        # rocket
-        self.level.allsprites.add(self.game.rocket)
 
         # level text
         self.level.allsprites.add(self.level.ltext)
@@ -123,9 +117,13 @@ class Scroller(object):
         if self.curbox == self.sbox and not self.offstart:
             self.level.allsprites.add(self.game.pbar)
             self.level.allsprites.add(self.game.gbar)
+            self.level.allsprites.add(self.game.pbartext)
+            self.level.allsprites.add(self.game.gbartext)            
         else:
             self.level.allsprites.remove(self.game.pbar)
             self.level.allsprites.remove(self.game.gbar)
+            self.level.allsprites.remove(self.game.pbartext)
+            self.level.allsprites.remove(self.game.gbartext)                        
 
         # moon
         if self.curbox == self.ebox:
@@ -141,7 +139,6 @@ class Scroller(object):
                 # get positions in pixels!
                 posx = roidpos[0]*self.game.swidth
                 posy = roidpos[1]*self.game.sheight
-#                print 'roid at {0},{1}!'.format(posx, posy)
                 ast = asteroid.Asteroid((posx,posy))
                 # create new asteroid and add to both groups
                 self.level.roidsprites.add(ast)
@@ -178,7 +175,10 @@ class Scroller(object):
             self.level.allsprites.add(self.level.dwall)
         else:
             self.level.darrow.reset()                        
-            self.level.allsprites.add(self.level.darrow)            
+            self.level.allsprites.add(self.level.darrow)
+
+        # rocket
+        self.level.allsprites.add(self.game.rocket)
 
     def handle_offscreen(self):
 
@@ -187,11 +187,9 @@ class Scroller(object):
         # if the rocket went off screen, check if we are
         # allowed to go this direction!
         if diroff:
-            print 'offscreen! diroff: {0}'.format(diroff)
             if self.allowed(diroff):
                 # check if we need to scroll
                 if self.need_scroll(diroff):
-                    print 'scroll needed!'
                     # move the rocket to this position and set the box
                     if diroff == Scroller.RIGHT:
                         self.game.rocket.rect.centerx -= self.game.swidth
@@ -208,15 +206,14 @@ class Scroller(object):
 
                     # get the sprites for this new box
                     self.refresh_spritegroup()
-                else:
-                    # we dont need to scroll
-                    print 'no scroll needed! diroff: {0}'.format(diroff)
             else:
                 # the rocket 'died' (crashed off the screen)
                 self.game.sfx['error'].play()
                 self.game.rktdead = True
                 self.game.numdestroyed += 1
-                self.game.destroyedtext.set_destroyed(self.game.numdestroyed)
+                self.game.destroyedtext.set_text('{0}{1}'.\
+                                                 format(fontsprite.DTEXT,
+                                                        self.game.numdestroyed))
                 self.reset()
 
     def update(self):

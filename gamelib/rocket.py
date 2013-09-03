@@ -3,10 +3,10 @@ import data
 import pygame
 import math
 import time
+import fontsprite
+import spritesheet
 
 class Rocket(state.BaseSprite):
-    # size of rocket
-    SIZE = (35,100)
     # x and y speed per frame (these should probably be equal)
     XSPEED = 300
     YSPEED = 300
@@ -22,12 +22,11 @@ class Rocket(state.BaseSprite):
         self.game = game
         
         # we need to rotate this baseimage
-        baseimage = pygame.image.load(data.filepath('rocket.png')).\
+        baseimage = pygame.image.load(data.filepath('smallrocket.png')).\
                     convert_alpha()
         # height and width of base image
         height, width = baseimage.get_width(), baseimage.get_height()
-        # make it smaller!!
-        self.baseimage = pygame.transform.scale(baseimage, Rocket.SIZE)
+        self.baseimage = baseimage
         
         # initial image is the upright image
         self.image = self.baseimage
@@ -35,6 +34,15 @@ class Rocket(state.BaseSprite):
 
         # orientation angle to vertical (clockwise in degrees)
         self.oangle = 0.0
+
+        # blank image for when we hit moon
+        self.blankimage = pygame.Surface((self.rect.width, self.rect.height),
+                                         pygame.SRCALPHA, 32).convert_alpha()
+
+        # images for explosion animation - only use last 9!
+        self.explodeimages = spritesheet.Spritesheet('explode2.png').\
+                             all_images(4, 4, 100, 100)[:9]
+        self.numexplode = len(self.explodeimages)
 
         # add states to the statemachine
         onlaunchpad_state = RocketOnLaunchpadState(self)
@@ -132,18 +140,29 @@ class RocketHitAsteroidState(state.State):
         # for controlling explosion
         self.explosiondone = False
         self.ncalled = 0
+        self.numframes = 9 # frames for each explosion image
+        self.exindx = -1
+
+    def set_explosion_image(self):
+        if not self.ncalled % self.numframes:
+            self.exindx -= 1
+            self.rkt.image = self.rkt.explodeimages[self.exindx]
+        self.ncalled += 1
+            
+
 
     def do_actions(self):
         # do some explosion
+        self.set_explosion_image()
 
-        self.ncalled += 1
-
-        if self.ncalled == 100:
+        if (self.exindx == -self.rkt.numexplode + 1):
             self.explosiondone = True
 
     def entry_actions(self):
         self.rkt.game.numdestroyed += 1
-        self.rkt.game.destroyedtext.set_destroyed(self.rkt.game.numdestroyed)
+        self.rkt.game.destroyedtext.set_text('{0}{1}'.\
+                                             format(fontsprite.DTEXT,
+                                                    self.rkt.game.numdestroyed))
         self.rkt.game.sfx['hitroid'].play()
 
     def check_conditions(self):
@@ -153,8 +172,10 @@ class RocketHitAsteroidState(state.State):
     def exit_actions(self):
         self.explosiondone = False
         self.ncalled = 0
+        self.exindx = -1
 
 class RocketHitMoonState(state.State):
+    FRAMES = 100
     def __init__(self, rocket):
         
         super(RocketHitMoonState, self).__init__('hitmoon')
@@ -163,12 +184,18 @@ class RocketHitMoonState(state.State):
         self.rkt = rocket
 
     def entry_actions(self):
-        # put an explosion animation somewhere
+        self.nframes = 0
+        # set blank image
+        self.rkt.image = self.rkt.blankimage
         pass
 
+    def do_actions(self):
+        self.nframes += 1
+        
+
     def check_conditions(self):
-        if self.rkt.game.pressed[pygame.K_RETURN]:
-            # this is slightly dodgy organisation of code?
+        #if self.rkt.game.pressed[pygame.K_RETURN]:
+        if self.nframes == RocketHitMoonState.FRAMES:
             return 'onlaunchpad'
 
 class RocketOnLaunchpadState(state.State):

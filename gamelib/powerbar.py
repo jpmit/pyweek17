@@ -48,7 +48,7 @@ class Powerbar(state.BaseSprite):
                          Powerbar.BORDER)
 
         # position the image
-        self.rect.centerx, self.rect.centery = Powerbar.LOCATION
+        self.rect.center = Powerbar.LOCATION
 
     def update(self, dt, game):
         # store the state of the game in the powerbar object

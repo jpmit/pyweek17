@@ -17,7 +17,7 @@ class Level(object):
         self.data = leveldata.ALLDATA[lnum]
         
         # this stores all sprites currently on the screen
-        self.allsprites = pygame.sprite.RenderUpdates()
+        self.allsprites = pygame.sprite.OrderedUpdates()
 
         # this stores only asteroid sprites for collision checking
         self.roidsprites = pygame.sprite.Group()
@@ -40,7 +40,9 @@ class Level(object):
 
     def init_level(self):
         # menu font
-        self.ltext = fontsprite.LevelText(self.game.levelfont, self.lnum + 1)
+        self.ltext = fontsprite.FontSprite(self.game.levelfont,
+                                           'LEVEL: {0}'.format(self.lnum + 1),
+                                           fontsprite.LEVLOC)
 
         # initialize scroller which handles screen movement
         self.game.scroller.new_level(self)

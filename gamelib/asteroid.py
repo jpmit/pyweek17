@@ -4,7 +4,7 @@ import data
 import const
 
 class Asteroid(state.BaseSprite):
-    NFRAMES = 20 # number of frames before changing image!
+    NFRAMES = 15 # number of frames before changing image!
     def __init__(self, pos):
 
         super(Asteroid, self).__init__()
