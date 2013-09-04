@@ -4,7 +4,7 @@ import const
 import data
 
 THICKNESS = 10 # width of wall in pixels
-COLOR = (31, 31, 144)#const.WHITE
+COLOR = (31, 31, 144) # wall color
 
 class SideWall(state.BaseSprite):
     def __init__(self, height, pos):
@@ -49,21 +49,25 @@ class Arrow(state.BaseSprite):
             rot = 180
         elif direction == Arrow.UP:
             rot = 270
+            
         # rotate the image
         if direction != Arrow.LEFT:
             self.baseimage = pygame.transform.rotate(self.baseimage, rot)
         self.image = self.baseimage
         self.rect = self.image.get_rect()
+        
         # set position
         self.rect.center = Arrow.LOCS[direction]
+        
         # blank image for flashing animation
         self.blankimage = pygame.Surface([self.rect.width, self.rect.height],
                                          pygame.SRCALPHA, 32).convert_alpha()
+        
         # allow switching between base and blank images
         self.images = [self.baseimage, self.blankimage]
         self.numimages = len(self.images)
         self.inum = 0
-        # set
+
         # track time passed since image altered
         self.tpassed = 0.0
 
@@ -80,4 +84,3 @@ class Arrow(state.BaseSprite):
             self.inum += 1
             self.inum = self.inum % self.numimages
             self.image = self.images[self.inum]
-

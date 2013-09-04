@@ -63,6 +63,7 @@ class Menu(object):
         self.exit = False
         self.helpon = False
         self.levelon = False
+        self.levselected = 0        
 
     def draw_help_text(self):
         ROOTPOS = (300, 80)
@@ -74,10 +75,16 @@ class Menu(object):
         ROOTPOS = (300, 80)
         YSPACE = 40
         nlev = self.game.numlevels
-        levtext = ['{0}'.format(i + 1) for i in range(nlev)]
-        
+        lev = ['{0}'.format(i + 1) for i in range(nlev)]
+        levtext = []
+        for (i, lt) in enumerate(lev):
+            if i == self.levselected:
+                levtext.append(self.game.helpfont.render(lt, True, SELCOL))
+            else:
+                levtext.append(self.game.helpfont.render(lt, True, const.WHITE))
+
         for (i,h) in enumerate(levtext):
-            self.screen.blit(h, (ROOTPOS[0],ROOTPOS[1] + i*YSPACE))
+            self.screen.blit(h, (ROOTPOS[0], ROOTPOS[1] + i*YSPACE))
 
     def draw_text(self):
         if self.helpon:
@@ -99,26 +106,39 @@ class Menu(object):
                 self.screen.blit(self.help_sel, Menu.HELPPOS)
 
     def sel_up(self):
-        self.game.sfx['click'].play()
-        
-        if self.selected == NEWGAME:
-            self.selected = HELP
-        elif self.selected == LEVEL:
-            self.selected = NEWGAME
-        elif self.selected == HELP:
-            self.selected = LEVEL
+        if not self.helpon:
+            self.game.sfx['click'].play()
+        # are we on the level select screen?
+        if self.levelon:
+            self.levselected -= 1
+            if self.levselected < 0:
+                self.levselected = self.game.numlevels - 1
+        else:
+            if self.selected == NEWGAME:
+                self.selected = HELP
+            elif self.selected == LEVEL:
+                self.selected = NEWGAME
+            elif self.selected == HELP:
+                self.selected = LEVEL
 
     def sel_down(self):
-        self.game.sfx['click'].play()
-        if self.selected == NEWGAME:
-            self.selected = LEVEL
-        elif self.selected == LEVEL:
-            self.selected = HELP
-        elif self.selected == HELP:
-            self.selected = NEWGAME
+        if not self.helpon:
+            self.game.sfx['click'].play()
+        # are we on the level select screen?
+        if self.levelon:
+            self.levselected += 1
+            if self.levselected > self.game.numlevels - 1:
+                self.levselected = 0
+        else:
+            if self.selected == NEWGAME:
+                self.selected = LEVEL
+            elif self.selected == LEVEL:
+                self.selected = HELP
+            elif self.selected == HELP:
+                self.selected = NEWGAME
 
     def handle_return_down(self):
-        if self.selected == NEWGAME:
+        if self.selected == NEWGAME or self.levelon:
             self.exit = True
 
     def handle_return_up(self):
@@ -152,6 +172,9 @@ class Menu(object):
                         self.handle_return_up()
 
             pygame.display.update()
+
+        # return the level selected
+        return self.levselected
 
     def draw_end_text(self):
         ndest = self.game.numdestroyed
@@ -222,3 +245,5 @@ class Menu(object):
         
         # reset exit status for next play!
         self.exit = False
+        self.levelon = False
+        self.selected = NEWGAME

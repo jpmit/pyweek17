@@ -27,19 +27,11 @@ class Game(object):
         self.clock = pygame.time.Clock()
 
         # background
-        background = pygame.image.load(data.filepath('stars.png'\
-                                                     )).convert_alpha()
-        #background = pygame.Surface(const.DMODE)
-        #background.fill(const.BCOLOR)
-        self.background = background
-        #self.background = pygame.transform.scale(background, const.DMODE)
-        # black background for now
-        #self.background = pygame.Surface(const.DMODE)
+        self.background = pygame.image.load(data.filepath('stars.png'\
+                                                          )).convert_alpha()
         
         self.load_sounds()
-
         self.load_fonts()
-
         self.store_globals()
 
     def load_sounds(self):
@@ -54,7 +46,7 @@ class Game(object):
                         'complete': pygame.mixer.Sound(data.filepath('complete.ogg')),
                         'hitroid': pygame.mixer.Sound(data.filepath('atari.ogg')),
                         'error': pygame.mixer.Sound(data.filepath('error.ogg')),
-                        'pbar': pygame.mixer.Sound(data.filepath('pbar2.ogg'))
+                        'pbar': pygame.mixer.Sound(data.filepath('pbar.ogg'))
                         }
             self.soundon = True
 
@@ -83,7 +75,6 @@ class Game(object):
 
         # text 'gravity' and 'power' for status bars are stored as
         # additional sprites
-        #self.pbartext = fontsprite.PbarText(self.barfont)
         self.pbartext = fontsprite.FontSprite(self.barfont, 'power',
                                               fontsprite.PBARLOC)
         self.gbartext = fontsprite.FontSprite(self.barfont, 'gravity',
@@ -102,27 +93,29 @@ class Game(object):
                                                    fontsprite.DESTLOC)
 
         # collision functions
-        # rocket with asteroids
+        # rocket with asteroids (scaled rect collision)
         self.collide_roid = pygame.sprite.collide_rect_ratio(Game.\
                                                                CRECTROID)
-        # rocket with moon
-        #self.collide_moon = pygame.sprite.collide_rect_ratio(Game.\
-        #                                                     CRECTMOON)
+        # rocket with moon ('pixel perfect' collision)
         self.collide_moon = pygame.sprite.collide_mask
 
         # scroller handles moving screen and sprites etc
         self.scroller = scrolling.Scroller(self)
 
-    def main(self):
+    def main(self, startlevel):
 
         # refresh globals - this is really for second time round,
         # i.e. so we reset num rockets destroyed to zero
         self.reset_globals()
 
+        # this is to make the sound effects louder relative to the
+        # background music, but I'm not sure it works like that...
         pygame.mixer.music.set_volume(0.8)
+
+        # loop the main music
         pygame.mixer.music.play(-1)
         
         # main game        
-        for levnum in [0]:
+        for levnum in range(startlevel, self.numlevels):
             nextlevel = level.Level(self, levnum)
             nextlevel.main()

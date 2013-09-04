@@ -123,7 +123,7 @@ class Scroller(object):
             self.level.allsprites.remove(self.game.pbar)
             self.level.allsprites.remove(self.game.gbar)
             self.level.allsprites.remove(self.game.pbartext)
-            self.level.allsprites.remove(self.game.gbartext)                        
+            self.level.allsprites.remove(self.game.gbartext)
 
         # moon
         if self.curbox == self.ebox:

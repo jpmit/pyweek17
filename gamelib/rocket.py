@@ -40,7 +40,7 @@ class Rocket(state.BaseSprite):
                                          pygame.SRCALPHA, 32).convert_alpha()
 
         # images for explosion animation - only use last 9!
-        self.explodeimages = spritesheet.Spritesheet('explode2.png').\
+        self.explodeimages = spritesheet.Spritesheet('explode.png').\
                              all_images(4, 4, 100, 100)[:9]
         self.numexplode = len(self.explodeimages)
 
@@ -108,7 +108,8 @@ class RocketFiredState(state.State):
 
         # work out angle that rocket is pointing (clockwise from
         # horizontal) based on speed and draw the rocket at that angle
-        angle = (180.0/math.pi) * math.acos( self.rkt.yvel / (self.rkt.xvel**2 + self.rkt.yvel**2)**0.5)
+        angle = (180.0/math.pi) * math.acos(self.rkt.yvel /
+                                            (self.rkt.xvel**2 + self.rkt.yvel**2)**0.5)
         if self.rkt.xvel < 0.0:
             angle = -angle
         self.rkt.oangle = angle
@@ -148,8 +149,6 @@ class RocketHitAsteroidState(state.State):
             self.exindx -= 1
             self.rkt.image = self.rkt.explodeimages[self.exindx]
         self.ncalled += 1
-            
-
 
     def do_actions(self):
         # do some explosion
@@ -194,7 +193,6 @@ class RocketHitMoonState(state.State):
         
 
     def check_conditions(self):
-        #if self.rkt.game.pressed[pygame.K_RETURN]:
         if self.nframes == RocketHitMoonState.FRAMES:
             return 'onlaunchpad'
 
@@ -210,12 +208,8 @@ class RocketOnLaunchpadState(state.State):
         """Move the rocket onto the launchpad"""
         self.rkt.oangle =  self.rkt.fangle
         self.rkt.draw(Rocket.LAUNCHLOC)
-
-        # refresh hitasteroid
-        #self.rkt.game.hitasteroid = False
         
     def do_actions(self):
-
         # time passed since last tick
         dt = self.rkt.dt
         
@@ -243,7 +237,6 @@ class RocketOnLaunchpadState(state.State):
             self.rkt.draw((self.rkt.rect.centerx, self.rkt.rect.centery))
 
     def check_conditions(self):
-
         # check if the powerbar is in the 'fired' state
         if self.rkt.game.pbar.brain.active_state.name == 'fired':
             return 'fired'

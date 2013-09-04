@@ -2,7 +2,9 @@
 
 """Constants useful globally"""
 
+# this FPS should be comfortably acheivable....
 FPS = 60
+
 # changing this resolution will break things - sorry
 DMODE = (1024, 600)
 

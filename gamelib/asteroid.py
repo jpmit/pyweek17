@@ -18,13 +18,14 @@ class Asteroid(state.BaseSprite):
         self.set_image()
 
     def load_images(self):
+        # 1st, 3rd, 6th and 13th image from the big spritesheet
         im1 = pygame.image.load(data.filepath('roid1.png')).\
               convert_alpha()
-        im2 = pygame.image.load(data.filepath('roid3.png')).\
+        im2 = pygame.image.load(data.filepath('roid2.png')).\
               convert_alpha()        
-        im3 = pygame.image.load(data.filepath('roid6.png')).\
+        im3 = pygame.image.load(data.filepath('roid3.png')).\
               convert_alpha()        
-        im4 = pygame.image.load(data.filepath('roid13.png')).\
+        im4 = pygame.image.load(data.filepath('roid4.png')).\
               convert_alpha()
 
         self.imarray = [im1, im2, im3, im4]

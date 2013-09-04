@@ -39,7 +39,6 @@ class Level(object):
         self.init_level()
 
     def init_level(self):
-        # menu font
         self.ltext = fontsprite.FontSprite(self.game.levelfont,
                                            'LEVEL: {0}'.format(self.lnum + 1),
                                            fontsprite.LEVLOC)

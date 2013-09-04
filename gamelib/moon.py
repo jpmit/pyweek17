@@ -5,21 +5,17 @@ import data
 
 class Moon(state.BaseSprite):
     # this is a square sprite at the moment
-    DIAMETER = 80
     def __init__(self, game):
 
         self.game = game
 
         super(Moon, self).__init__()
-        #self.image = pygame.Surface((Moon.DIAMETER, Moon.DIAMETER), pygame.SRCALPHA,
-        #                            32).convert_alpha()
+
+        # images, normal and hit state
         self.baseimage = pygame.image.load(data.filepath('moon.png')).convert_alpha()
-        self.hitimage =  pygame.image.load(data.filepath('moonhit2.png')).convert_alpha()
+        self.hitimage =  pygame.image.load(data.filepath('moonhit.png')).convert_alpha()
         self.image = self.baseimage
         self.rect = self.image.get_rect()
-
-        # for colliding using circles, if we end up using this
-        self.radius = Moon.DIAMETER/2
 
         # for mask collide, again if we use it
         self.mask = pygame.mask.from_surface(self.image)
@@ -60,9 +56,6 @@ class MoonIdleState(state.State):
 
     def entry_actions(self):
         """Draw the moon in the correct position"""
-        #pygame.draw.circle(self.moon.image, const.WHITE,
-        #                   (Moon.DIAMETER/2, Moon.DIAMETER/2),
-        #                   Moon.DIAMETER/2)
         self.moon.rect.center = self.moon.pos
 
 class MoonHitState(state.State):
@@ -77,7 +70,7 @@ class MoonHitState(state.State):
         self.moon.image = self.moon.hitimage
         
     def check_conditions(self):
-        # We'll be rescued next level!
+        # We'll be rescued next level from this endless state!
         pass
 
     def exit_actions(self):
