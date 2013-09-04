@@ -179,7 +179,7 @@ class Menu(object):
         pygame.time.wait(WAITTIME)
 
         # return the level selected
-        return self.levselected
+        return self.levselected, self.levelon
 
     def draw_end_text(self):
         ndest = self.game.numdestroyed
@@ -223,27 +223,29 @@ class Menu(object):
             self.screen.blit(s, (ROOTPOS[0], ROOTPOS[1] + i*YSPACE))
 
     def finish(self):
-        print 'finished game!!!'        
         # We have completed the game.  Say something nice to the player.
         # figure out what I am from how many rockets I destroyed.
 
-        # blit the text to the screen,
-        self.screen.blit(self.background, (0, 0))
-        self.draw_end_text()
-        pygame.display.update()
-        
-        # wait for return key
-        ex = False
-        while not ex:
-            for event in pygame.event.get():
-                if ((event.type == pygame.KEYUP) and
-                    (event.key == pygame.K_RETURN)):
-                    ex = True
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()                    
-                
-            self.game.clock.tick(const.FPS)
+        # dont give a ranking unless we started from the beginning!
+        if not self.levelon:
+
+            # blit the text to the screen,
+            self.screen.blit(self.background, (0, 0))
+            self.draw_end_text()
+            pygame.display.update()
+
+            # wait for return key
+            ex = False
+            while not ex:
+                for event in pygame.event.get():
+                    if ((event.type == pygame.KEYUP) and
+                        (event.key == pygame.K_RETURN)):
+                        ex = True
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()                    
+
+                self.game.clock.tick(const.FPS)
 
         # stop the music
         pygame.mixer.music.stop()

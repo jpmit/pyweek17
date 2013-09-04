@@ -7,10 +7,10 @@ if __name__ == '__main__':
     mn = menu.Menu(gm)
     while True:
         # start menu
-        levsel = mn.start()
+        levsel, single = mn.start()
 
         # play game
-        gm.main(levsel)
+        gm.main(levsel, single)
 
         # finish sequence
         mn.finish()

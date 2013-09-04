@@ -118,7 +118,7 @@ class Game(object):
         # scroller handles moving screen and sprites etc
         self.scroller = scrolling.Scroller(self)
 
-    def main(self, startlevel):
+    def main(self, startlevel, single=False):
 
         # refresh globals - this is really for second time round,
         # i.e. so we reset num rockets destroyed to zero
@@ -130,8 +130,14 @@ class Game(object):
 
         # loop the main music
         pygame.mixer.music.play(-1)
-        
+
+        if single:
+            # we only play a single level
+            endlevel = startlevel + 1
+        else:
+            endlevel = self.numlevels
+            
         # main game        
-        for levnum in range(startlevel, self.numlevels):
+        for levnum in range(startlevel, endlevel):
             nextlevel = level.Level(self, levnum)
             nextlevel.main()
