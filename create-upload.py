@@ -48,6 +48,7 @@ def add_files(generator):
             suffix = os.path.splitext(name)[1]
             if suffix in ('.pyc', '.pyo'): continue
             if name[0] == '.': continue
+            if name[0] == '~': continue
             filename = os.path.join(dirpath, name)
             package.write(filename, os.path.join(base, filename))
 

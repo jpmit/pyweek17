@@ -1,5 +1,6 @@
 *.pyc
 *~
+create-upload.py
+pyweek-upload.py
+*.zip
 *.tar.gz
-data/old
-
