@@ -22,3 +22,7 @@ PBARCOLOR = (223, 20, 20)
 
 # color of gravity bar (orange)
 GBARCOLOR = (241, 108, 28)
+
+# in GOD MODE, you can move the rocket using w,a,s,d keys AND you
+# never die (no collisions with asteroids or walls).
+GODMODE = False

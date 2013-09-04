@@ -5,6 +5,7 @@ import math
 import time
 import fontsprite
 import spritesheet
+import const
 
 class Rocket(state.BaseSprite):
     # x and y speed per frame (these should probably be equal)
@@ -222,15 +223,16 @@ class RocketOnLaunchpadState(state.State):
         if self.rkt.game.pressed[pygame.K_LEFT]:
             self.rkt.oangle -= dt*Rocket.ROTSPEED
 
-        # move rocket manually for collision debugging, remove this later
-        if self.rkt.game.pressed[pygame.K_w]:
-            self.rkt.rect.centery -= 10
-        if self.rkt.game.pressed[pygame.K_s]:            
-            self.rkt.rect.centery += 10
-        if self.rkt.game.pressed[pygame.K_d]:            
-            self.rkt.rect.centerx += 10
-        if self.rkt.game.pressed[pygame.K_a]:            
-            self.rkt.rect.centerx -= 10
+        # move rocket manually for collision debugging aka GODMODE
+        if const.GODMODE:
+            if self.rkt.game.pressed[pygame.K_w]:
+                self.rkt.rect.centery -= 10
+            if self.rkt.game.pressed[pygame.K_s]:            
+                self.rkt.rect.centery += 10
+            if self.rkt.game.pressed[pygame.K_d]:            
+                self.rkt.rect.centerx += 10
+            if self.rkt.game.pressed[pygame.K_a]:            
+                self.rkt.rect.centerx -= 10
 
         if self.rkt.oangle != oa:
             # we are oriented at a different angle to previously

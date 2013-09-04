@@ -7,6 +7,7 @@ from copy import deepcopy
 import asteroid
 import wall
 import fontsprite
+import const
 
 class Scroller(object):
     # constants for screen 'scrolling'
@@ -139,7 +140,7 @@ class Scroller(object):
                 # get positions in pixels!
                 posx = roidpos[0]*self.game.swidth
                 posy = roidpos[1]*self.game.sheight
-                ast = asteroid.Asteroid((posx,posy))
+                ast = asteroid.Asteroid(self.game, (posx,posy))
                 # create new asteroid and add to both groups
                 self.level.roidsprites.add(ast)
                 self.level.allsprites.add(ast)
@@ -207,14 +208,15 @@ class Scroller(object):
                     # get the sprites for this new box
                     self.refresh_spritegroup()
             else:
-                # the rocket 'died' (crashed off the screen)
-                self.game.sfx['error'].play()
-                self.game.rktdead = True
-                self.game.numdestroyed += 1
-                self.game.destroyedtext.set_text('{0}{1}'.\
-                                                 format(fontsprite.DTEXT,
-                                                        self.game.numdestroyed))
-                self.reset()
+                if not const.GODMODE:
+                    # the rocket 'died' (crashed off the screen)
+                    self.game.sfx['error'].play()
+                    self.game.rktdead = True
+                    self.game.numdestroyed += 1
+                    self.game.destroyedtext.set_text('{0}{1}'.\
+                                                     format(fontsprite.DTEXT,
+                                                            self.game.numdestroyed))
+                    self.reset()
 
     def update(self):
 

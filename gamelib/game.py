@@ -32,9 +32,11 @@ class Game(object):
         
         self.load_sounds()
         self.load_fonts()
+        self.load_images()
         self.store_globals()
 
     def load_sounds(self):
+        """Load ALL of the sounds used in the game."""
         try:
             pygame.mixer.init()
         except:
@@ -46,16 +48,30 @@ class Game(object):
                         'complete': pygame.mixer.Sound(data.filepath('complete.ogg')),
                         'hitroid': pygame.mixer.Sound(data.filepath('atari.ogg')),
                         'error': pygame.mixer.Sound(data.filepath('error.ogg')),
-                        'pbar': pygame.mixer.Sound(data.filepath('pbar.ogg'))
+                        'pbar': pygame.mixer.Sound(data.filepath('pbar.ogg')),
+                        'startgame': pygame.mixer.Sound(data.filepath('startgame.ogg'))
                         }
             self.soundon = True
 
     def load_fonts(self):
+        """Load ALL of the fonts usedin the game."""
         self.levelfont = pygame.font.Font(data.filepath('chalkdust.ttf'), 20)
         self.destfont = pygame.font.Font(data.filepath('chalkdust.ttf'), 20)
         self.barfont = pygame.font.Font(data.filepath('chalkdust.ttf'), 16)
         self.menufont = pygame.font.Font(data.filepath('chalkdust.ttf'), 64)
         self.helpfont = pygame.font.Font(data.filepath('chalkdust.ttf'), 32)
+
+    def load_images(self):
+        """Load the asteroid animation images only.  Others are loaded
+        elsewhere."""
+        self.astim1 = pygame.image.load(data.filepath('roid1.png')).\
+              convert_alpha()
+        self.astim2 = pygame.image.load(data.filepath('roid2.png')).\
+              convert_alpha()        
+        self.astim3 = pygame.image.load(data.filepath('roid3.png')).\
+              convert_alpha()        
+        self.astim4 = pygame.image.load(data.filepath('roid4.png')).\
+              convert_alpha()
 
     def reset_globals(self):
         self.store_globals()

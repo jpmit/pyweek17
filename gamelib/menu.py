@@ -7,6 +7,7 @@ NEWGAME = 0
 LEVEL = 1
 HELP = 2
 SELCOL = const.GBARCOLOR # same color as gravity bar
+WAITTIME = 800 # time in ms we wait for before starting the game
 
 class Menu(object):
     # positions are top left of rect
@@ -172,6 +173,10 @@ class Menu(object):
                         self.handle_return_up()
 
             pygame.display.update()
+
+        # play startgame sound
+        self.game.sfx['startgame'].play()
+        pygame.time.wait(WAITTIME)
 
         # return the level selected
         return self.levselected
