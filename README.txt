@@ -1,10 +1,9 @@
-Your Game Title
+Moon Lander
 ===============
 
-Entry in PyWeek #4  <http://www.pyweek.org/4/>
-Team: YOUR TEAM NAME (leave the "Team: bit")
-Members: YOUR TEAM MEMBERS (leave the "Members: bit")
-
+Entry in PyWeek #4  <http://www.pyweek.org/17/>
+Team: simple_game
+Members: jimmybob
 
 DEPENDENCIES:
 
@@ -12,9 +11,6 @@ You might need to install some of these before running the game:
 
   Python:     http://www.python.org/
   PyGame:     http://www.pygame.org/
-  PyOpenGL:   http://pyopengl.sf.net/
-
-
 
 RUNNING THE GAME:
 
@@ -24,17 +20,19 @@ Othewise open a terminal / console and "cd" to the game directory and run:
 
   python run_game.py
 
-
-
 HOW TO PLAY THE GAME:
 
-Move the cursor around the screen with the mouse.
+See in game instructions.
 
-Press the left mouse button to fire the ducks.
+Use the arrow keys and the return key to navigate the menus.
 
+Use the up and down arrow buttons to set the gravity level.
+Use the left and right arrow buttons to aim the rocket.
+Press and hold space to fire the rocket.
 
+Your aim is the guide the rocket to the moon (the white circle).
 
 LICENSE:
 
-This game skellington is placed in the Public Domain.
+
 
