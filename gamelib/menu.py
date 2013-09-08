@@ -254,3 +254,5 @@ class Menu(object):
         self.exit = False
         self.levelon = False
         self.selected = NEWGAME
+        self.levselected = 0
+
