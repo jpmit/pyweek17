@@ -33,6 +33,9 @@ class Rocket(state.BaseSprite):
         self.image = self.baseimage
         self.rect = self.image.get_rect()
 
+        # mask used for checking collision with moon
+        self.mask = pygame.mask.from_surface(self.image)
+
         # orientation angle to vertical (clockwise in degrees)
         self.oangle = 0.0
 
