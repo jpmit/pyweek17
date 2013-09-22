@@ -1,30 +1,30 @@
 Moon Lander
 ===============
 
-Entry in PyWeek #17  <http://www.pyweek.org/17/>
-Team: simple_game
+Entry in PyWeek #17  
+<http://www.pyweek.org/17/>  
+Team: simple_game  
 Members: jimmybob
 
 DEPENDENCIES:
+------------
 
 You might need to install some of these before running the game:
 
-  Python:     http://www.python.org/
-  PyGame:     http://www.pygame.org/
-
-
+  * Python:     <http://www.python.org/>  
+  * PyGame:     <http://www.pygame.org/>
 
 RUNNING THE GAME:
+----------------
 
 On Windows or Mac OS X, locate the "run_game.pyw" file and double-click it.
 
-Othewise open a terminal / console and "cd" to the game directory and run:
+Othewise open a terminal / console and "cd" to the game directory and type:
 
-  python run_game.py
-
-
+    $ python run_game.py
 
 HOW TO PLAY THE GAME:
+--------------------
 
 [See in game instructions for a quick start]
 
@@ -37,9 +37,8 @@ Use the up and down arrow buttons to set the gravity level.  Then use
 the left and right arrow buttons to aim the rocket.  Finally, press
 and hold space (then release) to fire the rocket.
 
-
-
 LICENSE:
+-------
 
 'Moon Lander' (code and art) is under the zlib license 
 (except for parts listed in "ARTISTIC CREDITS"):
@@ -63,11 +62,10 @@ LICENSE:
   3. This notice may not be removed or altered from any source
      distribution.
 
-
-
 ARTISTIC CREDITS:
+----------------
 
-Images: 
+**Images**: 
 
 - explosion spritesheet ('explode.png') is from opengameart.org
   (http://opengameart.org/content/explosion) and is listed as being in
@@ -83,7 +81,7 @@ Images:
   (http://opengameart.org/content/asteroid) and listed as being in the
   public domain.
 
-Music/Sound Effects:
+**Music/Sound Effects**:
 
 - music ('purity.ogg') is from the open game art bundle
   (http://open.commonly.cc/) and listed as being in the public domain.
