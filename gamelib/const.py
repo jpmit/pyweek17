@@ -1,5 +1,3 @@
-# const.py
-
 """Constants useful globally"""
 
 # this FPS should be comfortably acheivable....

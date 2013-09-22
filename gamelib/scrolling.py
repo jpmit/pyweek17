@@ -1,5 +1,3 @@
-# scrolling.py
-
 """Class to control scrolling of screens"""
 
 import pygame

@@ -1,5 +1,3 @@
-# fontsprite.py
-
 import state
 import pygame
 import const

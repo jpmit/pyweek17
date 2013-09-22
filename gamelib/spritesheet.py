@@ -1,10 +1,8 @@
-# spritesheet.py
-# This code is based on http://www.pygame.org/wiki/Spritesheet
-
 import pygame
 import data
 
 class Spritesheet(object):
+    # This class is based on http://www.pygame.org/wiki/Spritesheet    
     def __init__(self, filename):
         """filename should be a file in data directory"""
         try:

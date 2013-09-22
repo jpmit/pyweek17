@@ -1,5 +1,3 @@
-# leveldata.py
-
 """All the required information for each level."""
 
 L1DATA = {'startbox' : [0, 0],
